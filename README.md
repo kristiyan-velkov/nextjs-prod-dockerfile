@@ -1,12 +1,13 @@
-# Next.js Project: `nextjs-prod-dockerfile`
-
-## Project Overview
+<div align="center">
+  <img src="./public/next.svg" alt="Next.js Prod Dockerfile Logo">
+</div>
 
 This project is a production-ready Next.js application configured to run as a static export using a Dockerized Nginx server. It is optimized for deployment with a multi-stage Dockerfile that builds the Next.js app and serves the static files with Nginx for efficient performance.
 
-## Author
+## More about me 
 
-[Kristiyan Velkov](https://medium.com/@kristiyan.velkov)
+- [Blogs on Medium](https://medium.com/@kristiyan.velkov)
+- [LinkedIn](https://www.linkedin.com/in/kristiyan-velkov-763130b3/)
 
 ## Prerequisites
 
@@ -42,7 +43,8 @@ The following variables are defined in the `Makefile` and can be customized if n
 
 ---
 
-###  Next.js Configuration
+### Next.js Configuration
+
 To configure the next.config.js file for different output options, use the following setup:
 
 ```typescript
@@ -56,7 +58,7 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 ```
 
-- **Standalone Mode**: Uncomment the line output: "standalone" if you want to use Dockerfile.standalone. 
+- **Standalone Mode**: Uncomment the line output: "standalone" if you want to use Dockerfile.standalone.
 - **Export Mode**: By default, this configuration uses output: "export", which enables static export of the Next.js app.
 
 ---
@@ -96,7 +98,8 @@ This configuration is designed for deployment on environments where Docker is av
 - Modify the Makefile variables as needed for custom image names, container names, and ports.
 
 ---
-### TO-DO 
+
+### TO-DO
 
 - Optimize the Docker.standalone file
 - Create Docker file for default output config option
