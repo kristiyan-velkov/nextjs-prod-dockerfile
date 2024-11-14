@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Project: `nextjs-prod-dockerfile`
 
-## Getting Started
+## Project Overview
 
-First, run the development server:
+This project is a production-ready Next.js application configured to run as a static export using a Dockerized Nginx server. It is optimized for deployment with a multi-stage Dockerfile that builds the Next.js app and serves the static files with Nginx for efficient performance.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Author
+
+[Kristiyan Velkov](https://medium.com/@kristiyan.velkov)
+
+## Prerequisites
+
+- Docker installed on your machine.
+- Make installed to use the Makefile commands.
+
+## Usage
+
+| Command                | Description                          |
+| ---------------------- | ------------------------------------ |
+| `make help`            | Show available commands.             |
+| `make build`           | Build the Docker image.              |
+| `make run`             | Run the Docker container.            |
+| `make build-run`       | Build and run the Docker container.  |
+| `make stop`            | Stop the Docker container.           |
+| `make restart`         | Restart the Docker container.        |
+| `make logs`            | Show logs from the Docker container. |
+| `make clean`           | Remove Docker image and container.   |
+| `make clean-container` | Remove only the Docker container.    |
+| `make clean-image`     | Remove only the Docker image.        |
+
+---
+
+### Environment Variables
+
+The following variables are defined in the `Makefile` and can be customized if needed:
+
+- `IMAGE_NAME`: The name of the Docker image. Default is `nextjs-app`.
+- `CONTAINER_NAME`: The name of the Docker container. Default is `nextjs-container`.
+- `HOST_PORT`: The port on the host machine that the container will map to. Default is `3000`.
+- `CONTAINER_PORT`: The port inside the Docker container where Nginx serves the application. Default is `80`.
+- `DOCKERFILE`: The Dockerfile to use. Default is `Dockerfile`. If you want to use standalone version of the build use Dockerfile.standalone
+
+---
+
+###  Next.js Configuration
+To configure the next.config.js file for different output options, use the following setup:
+
+```typescript
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  // output: "standalone", // Use the Dockerfile.standalone file with this option
+  output: "export",
+};
+
+export default nextConfig;
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Standalone Mode**: Uncomment the line output: "standalone" if you want to use Dockerfile.standalone. 
+- **Export Mode**: By default, this configuration uses output: "export", which enables static export of the Next.js app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### How to Build and run the project under Docker
 
-## Learn More
+1. **Build the Docker Image**:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+  make build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2.  **Run the Docker Container**:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+  make run
+```
 
-## Deploy on Vercel
+3. **Build and Run with a Single Command**
+   Alternatively, you can build and run in one step with:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+ make build-run
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Deployment
+
+This configuration is designed for deployment on environments where Docker is available. The Nginx server efficiently serves the static Next.js build, making it suitable for production use.
+
+---
+
+## Notes
+
+- Ensure Docker is properly configured to allow external access to port `3000` on the host machine if necessary.
+- Modify the Makefile variables as needed for custom image names, container names, and ports.
+
+---
+### TO-DO 
+
+- Optimize the Docker.standalone file
+- Create Docker file for default output config option

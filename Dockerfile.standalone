@@ -1,0 +1,56 @@
+    # Use Node.js slim image as the base
+FROM node:23.1.0-slim AS base
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Set working directory
+WORKDIR /app
+
+# ------------------------------
+# Stage 1: Install dependencies
+# ------------------------------
+FROM base AS deps
+
+# Copy only the package files to leverage Docker cache if dependencies haven't changed
+COPY package.json package-lock.json .npmrc ./
+
+# Install only production dependencies for slimmer image
+RUN npm install --only=production && npm cache clean --force
+
+# ------------------------------
+# Stage 2: Build the Next.js app
+# ------------------------------
+FROM base AS builder
+
+# Copy dependencies
+COPY --from=deps /app/node_modules ./node_modules
+# Copy all files except those ignored in .dockerignore
+COPY . .
+
+# Build the Next.js application in standalone mode
+RUN npm run build
+
+# ------------------------------
+# Stage 3: Prepare Production Image
+# ------------------------------
+FROM node:23.1.0-slim AS runner
+
+# Set non-root user and group for security
+RUN addgroup --gid 1001 nodejs && \
+    adduser --system --uid 1001 --ingroup nodejs nextjs
+
+# Copy only necessary files for production
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/public ./public
+
+# Install production dependencies for the final image
+RUN npm install --only=production && npm cache clean --force
+
+# Set user, expose port, and start the application
+USER nextjs
+EXPOSE 3000
+
+# Start the application
+CMD ["node", "server.js"]
