@@ -3,7 +3,9 @@ IMAGE_NAME = nextjs-app
 CONTAINER_NAME = nextjs-container
 HOST_PORT = 3000
 CONTAINER_PORT = 80
-DOCKERFILE = Dockerfile.export
+DOCKERFILE = Dockerfile.standalone
+NODE_VERSION = 23.1.0-alpine
+NGINX_VERSION = 1.27.2-alpine
 
 # Default target
 .PHONY: help
@@ -19,7 +21,10 @@ help:
 
 # Build the Docker image
 build:
-	docker build -f $(DOCKERFILE) -t $(IMAGE_NAME) .
+	docker build \
+		--build-arg NODE_VERSION=$(NODE_VERSION) \
+		--build-arg NGINX_VERSION=$(NGINX_VERSION) \
+		-f $(DOCKERFILE) -t $(IMAGE_NAME) .
 
 # Run the Docker container
 run:

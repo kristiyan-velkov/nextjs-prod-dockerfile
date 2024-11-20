@@ -1,5 +1,7 @@
 # Use Node.js 23.1.0-alpine for a lightweight, specific version
-FROM node:23.1.0-alpine
+ARG NODE_VERSION=23.1.0-alpine
+
+FROM node:${NODE_VERSION} AS base
 
 # Create a non-root user for security
 RUN adduser -D -u 1001 app

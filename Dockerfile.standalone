@@ -1,7 +1,9 @@
 # ------------------------------
 # Base Stage: Use a lightweight Node.js alpine image
 # ------------------------------
-FROM node:23.1.0-alpine AS base
+ARG NODE_VERSION=23.1.0-alpine
+
+FROM node:${NODE_VERSION} AS base
 
 # Set working directory
 WORKDIR /app
@@ -18,7 +20,7 @@ RUN npm ci && npm cache clean --force
 FROM base AS builder
 
 # Copy installed dependencies
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=base /app/node_modules ./node_modules
 
 # Copy application source code
 COPY . .
@@ -29,7 +31,7 @@ RUN npm run build
 # ------------------------------
 # Stage 3: Create Production Image
 # ------------------------------
-FROM node:23.1.0-alpine AS runner
+FROM node:${NODE_VERSION} AS runner
 
 # Set a non-root user for security
 RUN addgroup --gid 1001 nodejs && \
@@ -44,7 +46,6 @@ WORKDIR /app
 # Copy necessary files from builder stage
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/public ./public
-COPY --from=deps /app/node_modules ./node_modules
 
 # Ensure permissions for the non-root user
 RUN chown -R nextjs:nodejs /app
