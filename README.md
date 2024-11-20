@@ -2,9 +2,9 @@
   <img src="./public/next.svg" alt="Next.js Prod Dockerfile Logo">
 </div>
 
-This project is a production-ready Next.js application configured to run as a static export using a Dockerized Nginx server. It is optimized for deployment with a multi-stage Dockerfile that builds the Next.js app and serves the static files with Nginx for efficient performance.
+This repository contains the configuration for running a Next.js application using Docker. It supports development, production, and static export modes with three different Dockerfiles and a docker-compose.yml file.
 
-## More about me 
+## More about me
 
 - [Blogs on Medium](https://medium.com/@kristiyan.velkov)
 - [LinkedIn](https://www.linkedin.com/in/kristiyan-velkov-763130b3/)
@@ -99,7 +99,15 @@ This configuration is designed for deployment on environments where Docker is av
 
 ---
 
-### TO-DO
+## Docker Compose with Watch Mode
 
-- Optimize the Docker.standalone file
-- Create Docker file for default output config option
+This project supports watch mode for live reloading during development using Docker Compose. The docker-compose.yml file is configured to sync changes in your local project directory with the container and rebuild the service when key files change.
+
+```bash
+docker compose up --watch
+```
+
+**Watch Mode Configuration: The develop section in the docker-compose.yml file includes:**
+
+- **Sync Changes**: Automatically syncs changes made in your local ./app directory with the /app directory inside the container. -**Rebuild Dependencies**: Automatically rebuilds the service when package.json changes, e.g., when you install a new package.
+- **File Syncing**: Changes to source files will be reflected inside the container in real-time. However, the node_modules folder is excluded to improve performance.
