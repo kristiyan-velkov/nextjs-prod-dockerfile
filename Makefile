@@ -3,7 +3,7 @@ IMAGE_NAME = nextjs-app
 CONTAINER_NAME = nextjs-container
 HOST_PORT = 3000
 CONTAINER_PORT = 80
-DOCKERFILE = Dockerfile
+DOCKERFILE = Dockerfile.export
 
 # Default target
 .PHONY: help

@@ -1,5 +1,5 @@
-# Use Node.js slim image as the base for building the static site
-FROM node:23.1.0-slim AS builder
+# Use Node.js alpine image as the base for building the static site
+FROM node:23.1.0-alpine AS builder
 
 # Set working directory
 WORKDIR /app

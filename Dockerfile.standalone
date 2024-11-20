@@ -1,56 +1,59 @@
-    # Use Node.js slim image as the base
-FROM node:23.1.0-slim AS base
-
-# Set environment variables
-ENV NODE_ENV=production
-ENV PORT=3000
+# ------------------------------
+# Base Stage: Use a lightweight Node.js alpine image
+# ------------------------------
+FROM node:23.1.0-alpine AS base
 
 # Set working directory
 WORKDIR /app
 
-# ------------------------------
-# Stage 1: Install dependencies
-# ------------------------------
-FROM base AS deps
+# Leverage Docker cache by copying only package manager files
+COPY package.json package-lock.json ./
 
-# Copy only the package files to leverage Docker cache if dependencies haven't changed
-COPY package.json package-lock.json .npmrc ./
-
-# Install only production dependencies for slimmer image
-RUN npm install --only=production && npm cache clean --force
+# Install dependencies
+RUN npm ci && npm cache clean --force
 
 # ------------------------------
 # Stage 2: Build the Next.js app
 # ------------------------------
 FROM base AS builder
 
-# Copy dependencies
+# Copy installed dependencies
 COPY --from=deps /app/node_modules ./node_modules
-# Copy all files except those ignored in .dockerignore
+
+# Copy application source code
 COPY . .
 
-# Build the Next.js application in standalone mode
+# Build the application in standalone mode
 RUN npm run build
 
 # ------------------------------
-# Stage 3: Prepare Production Image
+# Stage 3: Create Production Image
 # ------------------------------
-FROM node:23.1.0-slim AS runner
+FROM node:23.1.0-alpine AS runner
 
-# Set non-root user and group for security
+# Set a non-root user for security
 RUN addgroup --gid 1001 nodejs && \
     adduser --system --uid 1001 --ingroup nodejs nextjs
 
-# Copy only necessary files for production
+# Set environment variables
+ENV NODE_ENV=production
+
+# Set the working directory
+WORKDIR /app
+
+# Copy necessary files from builder stage
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/public ./public
+COPY --from=deps /app/node_modules ./node_modules
 
-# Install production dependencies for the final image
-RUN npm install --only=production && npm cache clean --force
+# Ensure permissions for the non-root user
+RUN chown -R nextjs:nodejs /app
 
-# Set user, expose port, and start the application
+# Switch to non-root user
 USER nextjs
+
+# Expose application port
 EXPOSE 3000
 
-# Start the application
+# Run the application
 CMD ["node", "server.js"]
