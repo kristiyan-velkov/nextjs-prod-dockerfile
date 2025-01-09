@@ -6,7 +6,7 @@ This repository contains the configuration for running a Next.js application usi
 
 ## More about me
 
-- [Blogs on Medium](https://medium.com/@kristiyan.velkov)
+- [Blogs on Medium](https://medium.com/@kristiyanvelkov)
 - [LinkedIn](https://www.linkedin.com/in/kristiyan-velkov-763130b3/)
 
 ## Prerequisites
