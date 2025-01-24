@@ -1,11 +1,13 @@
 # Variables
 IMAGE_NAME = nextjs-app
-CONTAINER_NAME = nextjs-container
+IMAGE_TAG = latest
+CONTAINER_NAME = nextjsapp-container
 HOST_PORT = 3000
 CONTAINER_PORT = 80
 DOCKERFILE = Dockerfile.standalone
-NODE_VERSION = 23.1.0-alpine
+NODE_VERSION = 23.4.0-alpine
 NGINX_VERSION = 1.27.2-alpine
+
 
 # Default target
 .PHONY: help
@@ -24,12 +26,12 @@ build:
 	docker build \
 		--build-arg NODE_VERSION=$(NODE_VERSION) \
 		--build-arg NGINX_VERSION=$(NGINX_VERSION) \
-		-f $(DOCKERFILE) -t $(IMAGE_NAME) .
+		-f $(DOCKERFILE) -t $(IMAGE_NAME):$(IMAGE_TAG) .
 
 # Run the Docker container
 run:
 	@docker rm -f $(CONTAINER_NAME) 2>/dev/null || true
-	docker run --name $(CONTAINER_NAME) -p $(HOST_PORT):$(CONTAINER_PORT) $(IMAGE_NAME)
+	docker run --name $(CONTAINER_NAME) -p $(HOST_PORT):$(CONTAINER_PORT) $(IMAGE_NAME):$(IMAGE_TAG)
 
 # Build and run the Docker container in one step
 build-run: build run
@@ -48,7 +50,7 @@ logs:
 # Clean up by removing Docker image and container
 clean:
 	-docker rm -f $(CONTAINER_NAME)
-	-docker rmi $(IMAGE_NAME)
+	-docker rmi $(IMAGE_NAME):$(IMAGE_TAG)
 
 # Clean up by removing Docker container
 clean-container:
@@ -56,4 +58,4 @@ clean-container:
 
 # Clean up by removing Docker image and container
 clean-image:
-	docker rmi $(IMAGE_NAME)
+	docker rmi $(IMAGE_NAME):$(IMAGE_TAG)

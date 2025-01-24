@@ -1,5 +1,5 @@
 # Use Node.js alpine image as the base for building the static site
-ARG NODE_VERSION=23.1.0-alpine
+ARG NODE_VERSION=23.4.0-alpine
 ARG NGINX_VERSION=1.27.2-alpine
 
 FROM node:${NODE_VERSION} AS base
