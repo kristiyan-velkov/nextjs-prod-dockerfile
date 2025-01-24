@@ -1,7 +1,7 @@
 # ------------------------------
 # Base Stage: Use a lightweight Node.js alpine image
 # ------------------------------
-ARG NODE_VERSION=23.1.0-alpine
+ARG NODE_VERSION=23.4.0-alpine
 
 FROM node:${NODE_VERSION} AS base
 
