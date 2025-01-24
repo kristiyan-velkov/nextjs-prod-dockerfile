@@ -2,17 +2,30 @@
   <img src="./public/next.svg" alt="Next.js Prod Dockerfile Logo">
 </div>
 
-This repository contains the configuration for running a Next.js application using Docker. It supports development, production, and static export modes with three different Dockerfiles and a docker-compose.yml file.
+This repository contains the configuration for running a Next.js 15 application using Docker. It supports development, production, and static export modes with three different Dockerfiles and a docker-compose.yml file.
 
 ## More about me
 
 - [Blogs on Medium](https://medium.com/@kristiyanvelkov)
 - [LinkedIn](https://www.linkedin.com/in/kristiyan-velkov-763130b3/)
 
+---
+
+## Security
+This Docker image has been thoroughly scanned for vulnerabilities to ensure a secure environment for your Next.js 15 application. The image has passed all vulnerability assessments using Docker's built-in security tools, including Docker Scout. Regular updates to the base image and dependencies are recommended to maintain a high level of security.
+
+<div align="center">
+  <img src="./public/docker-scout.png" alt="Docker Scout check">
+</div>
+
+---
+
 ## Prerequisites
 
 - Docker installed on your machine.
 - Make installed to use the Makefile commands.
+
+---
 
 ## Usage
 
