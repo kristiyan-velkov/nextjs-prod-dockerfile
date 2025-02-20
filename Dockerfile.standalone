@@ -1,26 +1,22 @@
 # ------------------------------
-# Base Stage: Use a lightweight Node.js alpine image
+# Base Stage: Use a lightweight Node.js image
 # ------------------------------
-ARG NODE_VERSION=23.4.0-alpine
-
+ARG NODE_VERSION=23.8.0-alpine
 FROM node:${NODE_VERSION} AS base
 
 # Set working directory
 WORKDIR /app
 
-# Leverage Docker cache by copying only package manager files
+# Copy only necessary files for dependency installation
 COPY package.json package-lock.json ./
 
 # Install dependencies
-RUN npm ci && npm cache clean --force
+RUN npm ci
 
 # ------------------------------
 # Stage 2: Build the Next.js app
 # ------------------------------
 FROM base AS builder
-
-# Copy installed dependencies
-COPY --from=base /app/node_modules ./node_modules
 
 # Copy application source code
 COPY . .
@@ -33,9 +29,8 @@ RUN npm run build
 # ------------------------------
 FROM node:${NODE_VERSION} AS runner
 
-# Set a non-root user for security
-RUN addgroup --gid 1001 nodejs && \
-    adduser --system --uid 1001 --ingroup nodejs nextjs
+# Use built-in non-root user for security
+USER node
 
 # Set environment variables
 ENV NODE_ENV=production
@@ -43,15 +38,10 @@ ENV NODE_ENV=production
 # Set the working directory
 WORKDIR /app
 
-# Copy necessary files from builder stage
+# Copy only necessary files from builder stage
 COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-
-# Ensure permissions for the non-root user
-RUN chown -R nextjs:nodejs /app
-
-# Switch to non-root user
-USER nextjs
 
 # Expose application port
 EXPOSE 3000
