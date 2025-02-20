@@ -1,50 +1,56 @@
-# ------------------------------
-# Base Stage: Use a lightweight Node.js image
-# ------------------------------
+# ============================================
+# Base Stage: Use a Lightweight Node.js Image
+# ============================================
+
+# Use an official Node.js Alpine image (customizable via ARG)
 ARG NODE_VERSION=23.8.0-alpine
 FROM node:${NODE_VERSION} AS base
 
-# Set working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy only necessary files for dependency installation
+# Copy only package-related files first to leverage Docker caching
 COPY package.json package-lock.json ./
 
-# Install dependencies
+# Install dependencies using npm ci (ensures a clean, reproducible install)
 RUN npm ci
 
-# ------------------------------
-# Stage 2: Build the Next.js app
-# ------------------------------
+# ============================================
+# Stage 2: Build the Next.js Application
+# ============================================
+
+# Use the base image to build the application
 FROM base AS builder
 
-# Copy application source code
+# Copy the entire application source code into the container
 COPY . .
 
-# Build the application in standalone mode
+# Build the application in standalone mode (outputs to `.next/standalone`)
 RUN npm run build
 
-# ------------------------------
+# ============================================
 # Stage 3: Create Production Image
-# ------------------------------
+# ============================================
+
+# Use the same Node.js version for the final production container
 FROM node:${NODE_VERSION} AS runner
 
-# Use built-in non-root user for security
+# Use a built-in non-root user for security best practices
 USER node
 
-# Set environment variables
+# Set environment variables for production
 ENV NODE_ENV=production
 
-# Set the working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy only necessary files from builder stage
-COPY --from=builder /app/.next/standalone ./
+# Copy only necessary files from the builder stage to keep the image minimal
+COPY --from=builder /app/.next/standalone ./      
 COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/public ./public              
 
-# Expose application port
+# Expose the application port (default Next.js port)
 EXPOSE 3000
 
-# Run the application
+# Start the application using the standalone server
 CMD ["node", "server.js"]
