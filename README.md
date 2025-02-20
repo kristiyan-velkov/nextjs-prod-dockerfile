@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./public/next.svg" alt="Next.js Prod Dockerfile Logo">
+  <img src="./public/next.svg" alt="Next.js Prod Dockerfile Logo" />
 </div>
 
 This repository contains the configuration for running a Next.js 15 application using Docker. It supports development, production, and static export modes with three different Dockerfiles and a docker-compose.yml file.
@@ -12,11 +12,14 @@ This repository contains the configuration for running a Next.js 15 application 
 ---
 
 ## Security
+
 This Docker image has been thoroughly scanned for vulnerabilities to ensure a secure environment for your Next.js 15 application. The image has passed all vulnerability assessments using Docker's built-in security tools, including Docker Scout. Regular updates to the base image and dependencies are recommended to maintain a high level of security.
 
 <div align="center">
-  <img src="./public/docker-scout.png" alt="Docker Scout check">
+  <img src="./public/docker-scout.png" alt="Docker Scout check" />
 </div>
+
+- **Article**: [Docker Scout in Action](https://levelup.gitconnected.com/docker-scout-in-action-63e7c812532a?sk=120903755538c5065585d458d5e1eaa8)
 
 ---
 
@@ -51,7 +54,7 @@ The following variables are defined in the `Makefile` and can be customized if n
 - `IMAGE_NAME`: The name of the Docker image. Default is `nextjs-app`.
 - `CONTAINER_NAME`: The name of the Docker container. Default is `nextjs-container`.
 - `HOST_PORT`: The port on the host machine that the container will map to. Default is `3000`.
-- `CONTAINER_PORT`: The port inside the Docker container where Nginx serves the application. Default is `80`.
+- `CONTAINER_PORT`: The port inside the Docker container where Nginx serves the application. Default is `80`. For dev use `3000`
 - `DOCKERFILE`: The Dockerfile to use. Default is `Dockerfile`. If you want to use standalone version of the build use Dockerfile.standalone -`NODE_VERSION`: The version of Node.js used in the base image. Default is `23.1.0-alpine`. This can be updated for easier migrations to newer versions.
 - `NGINX_VERSION`: The version of Nginx used in the export configuration. Default is `1.27.2-alpine`. This can be customized to match specific requirements or upgraded when necessary.
 

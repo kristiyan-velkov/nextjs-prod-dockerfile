@@ -1,31 +1,27 @@
-# Use Node.js 23.1.0-alpine for a lightweight, specific version
-ARG NODE_VERSION=23.4.0-alpine
-
+# Use a lightweight Node.js base image
+ARG NODE_VERSION=23.8.0-alpine
 FROM node:${NODE_VERSION} AS base
 
-# Create a non-root user for security
-RUN adduser -D -u 1001 app
-
-# Set the working directory inside the container
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy dependency files and install dependencies with root user
+# Copy package.json and package-lock.json first for caching
 COPY package.json package-lock.json ./
 
-#Install the dependencies
-RUN npm install
+# Ensure the correct permissions for the non-root user
+RUN chown -R node:node /app
 
-# Change ownership of the /app directory to the non-root user
-RUN chown -R app:app /app
+# Switch to the node user BEFORE installing dependencies
+USER node
 
-# Switch to the non-root user
-USER app
+# Install dependencies (including devDependencies for development)
+RUN npm install --no-audit
 
-# Copy the entire project into the container with correct ownership
-COPY --chown=app:app . /app
+# Copy the entire project (after dependencies for better caching)
+COPY --chown=node:node . .
 
-# Expose the port used by the Next.js development server
+# Expose Next.js default port
 EXPOSE 3000
 
-# Default command to start the development server
+# Default command to start the Next.js development server
 CMD ["npm", "run", "dev"]

@@ -1,35 +1,39 @@
-# Use Node.js alpine image as the base for building the static site
-ARG NODE_VERSION=23.4.0-alpine
-ARG NGINX_VERSION=1.27.2-alpine
+# =========================================
+# Stage 1: Build the Next.js Application
+# =========================================
+ARG NODE_VERSION=23.8.0-alpine
+ARG NGINX_VERSION=1.27.4-alpine
 
+# Use a lightweight Node.js image for building (customizable via ARG)
 FROM node:${NODE_VERSION} AS base
 
-# Set working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Only copy package files to leverage Docker cache if dependencies haven't changed
-COPY package.json package-lock.json .npmrc ./
+# Copy package-related files first to leverage Docker's caching mechanism
+COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm ci && npm cache clean --force
+# Install project dependencies using npm ci (ensures a clean, reproducible install)
+RUN npm ci
 
-# Copy the rest of the application files except those specified in .dockerignore
+# Copy the rest of the application source code into the container
 COPY . .
 
-# Build the Next.js application for static export
+# Build the Next.js application for static export (outputs to /app/out)
 RUN npm run build
 
-# ------------------------------
-# Stage 2: Prepare Nginx to serve the static files
-# ------------------------------
+# =========================================
+# Stage 2: Prepare Nginx to Serve Static Files
+# =========================================
+
+
 FROM nginx:${NGINX_VERSION} AS runner
 
-# Copy static build output from builder to Nginx's default HTML directory
+# Copy the static build output from the build stage to Nginx's default HTML serving directory
 COPY --from=base /app/out /usr/share/nginx/html
 
-
-# Expose port 80 for serving the static files
+# Expose port 80 to allow HTTP traffic
 EXPOSE 80
 
-# Start Nginx server
+# Start Nginx in the foreground to keep the container running
 CMD ["nginx", "-g", "daemon off;"]
