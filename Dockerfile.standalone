@@ -3,7 +3,7 @@
 # ============================================
 
 # Use an official Node.js Alpine image (customizable via ARG)
-ARG NODE_VERSION=23.8.0-alpine
+ARG NODE_VERSION=22.14.0-alpine
 FROM node:${NODE_VERSION} AS base
 
 # Set the working directory inside the container
@@ -12,8 +12,12 @@ WORKDIR /app
 # Copy only package-related files first to leverage Docker caching
 COPY package.json package-lock.json ./
 
+# Set build-time environment variables
+ENV NODE_ENV=production
+
+
 # Install dependencies using npm ci (ensures a clean, reproducible install)
-RUN npm ci
+RUN npm ci --omit=dev && npm cache clean --force
 
 # ============================================
 # Stage 2: Build the Next.js Application
@@ -38,9 +42,12 @@ FROM node:${NODE_VERSION} AS runner
 # Use a built-in non-root user for security best practices
 USER node
 
-# Set environment variables for production
-ENV NODE_ENV=production
+
+# Set the port for the Next.js standalone server (default is 3000)
 ENV PORT=80
+
+# Disable Next.js telemetry during runtime
+ENV NEXT_TELEMETRY_DISABLE=1
 
 # Set the working directory inside the container
 WORKDIR /app
