@@ -40,6 +40,7 @@ USER node
 
 # Set environment variables for production
 ENV NODE_ENV=production
+ENV PORT=80
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -49,8 +50,8 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public              
 
-# Expose the application port (default Next.js port)
-EXPOSE 3000
+# Expose port 80 to allow HTTP traffic
+EXPOSE 80
 
 # Start the application using the standalone server
-CMD ["node", "server.js"]
+ENTRYPOINT ["node", "server.js"]
