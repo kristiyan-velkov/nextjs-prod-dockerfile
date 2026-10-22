@@ -1,7 +1,7 @@
 # =========================================
 # Stage 1: Build the Next.js Application
 # =========================================
-ARG NODE_VERSION=22.14.0-alpine
+ARG NODE_VERSION=22.23.4-alpine
 ARG NGINX_VERSION=1.27.4-alpine
 
 # Use a lightweight Node.js image for building (customizable via ARG)
